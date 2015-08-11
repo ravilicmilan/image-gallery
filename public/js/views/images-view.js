@@ -25,7 +25,6 @@ app.Views.ImageView = Backbone.View.extend({
 
 	showModal: function(e) {
 		e.preventDefault();
-		var button = $(event.relatedTarget); // Button that triggered the modal
 		$('.modal-title').text(this.model.get('caption'));
 		$('.modal-body img#modal-image').attr('src', '/media/' + this.model.get('fileName'));
 	},
