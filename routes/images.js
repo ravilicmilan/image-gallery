@@ -14,17 +14,15 @@ var upload = multer({
 
 		if (allowedExtensions.indexOf(ext) === -1) {
 			cb(null, false, {message: 'Only image type files are allowed: ' + allowedExtensions.toString()});
-			console.log(file);
 		} else {
 			cb(null, true);
-			console.log(file);
 		}
   	}
 });
 var cpUpload = upload.single('file');
 var checkAuth = require('../utils/auth');
 var fs = require('fs');
-var gm = require('gm');
+var gm = require('gm').subClass({ imageMagick: true });
 var totalImages;
 
 var getImages = function(req, res, next) {
