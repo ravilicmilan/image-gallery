@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="x-access-token" content="{{token}}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Image Gallery With Image Tagging</title>
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div id="header"></div>
+
+<div class="container">
+	<div id="response" style="display: none;"></div>
+	<div id="main" class="row col-xs-12 col-sm-12 col-md-12 col-lg-12"></div>
+	<div class="clearfix"></div>
+	<div id="pagination-wrapper" class="row">
+		<div id="pagination-nav" class="text-center"></div> 
+	</div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+      </div>
+      <div class="modal-body">
+        <img src="" alt="" id="modal-image" width="100%" height="100%">
+      </div>
+      <div class="modal-footer">
+		
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Templates -->
+<script id="header-template" type="text/template">
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+		    <!-- Brand and toggle get grouped for better mobile display -->
+		    <div class="navbar-header">
+		      	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+		      	  	<span class="sr-only">Toggle navigation</span>
+		      	  	<span class="icon-bar"></span>
+		      	  	<span class="icon-bar"></span>
+		      	  	<span class="icon-bar"></span>
+		      	</button>
+		      	<a class="navbar-brand" href="/#">Image Gallery</a>
+		    </div>
+		    <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+				 	<li id="home" class="active"><a href="/#">List Of Images</a></li>
+				 	<li id="about"><a href="/#about">About</a></li>	 		
+				 	<% if (loggedIn === true) { %> 
+				 		<li id="add"><a href="/#add">Upload New Image</a></li>
+				 		<li id="logout"><a href="#" id="logout_btn">Logout</a></li>
+				 	<% } else { %>
+				 		<li id="admin"><a href="/#admin/login">Login</a></li>
+				 	<% } %>
+				</ul>
+				<form class="navbar-form navbar-right" role="search">
+		        	<div class="form-group">
+		        	  	<input type="text" id="search_txt" class="form-control" placeholder="Search">
+		        	</div>
+		        	<button type="submit" id="search_btn" class="btn btn-primary">Search</button>
+		      </form>
+		    </div>
+		</div>  
+	</nav>
+</script>
+
+<script id="image-template" type="text/template">
+	<a href="#images/<%= image._id %>">
+		<img src="media/thumbs/<%= image.fileName %>" alt="<%= image.caption %>"/>
+	</a>
+	<div class="caption">
+        <p><%= image.caption %></p>
+        <p>
+        	<a href="#images/<%= image._id %>" class="btn btn-primary btn-sm view-btn" role="button">Tags</a> 
+        	<a href="#" class="btn btn-default btn-sm enlarge-btn" role="button" data-toggle="modal" data-target="#exampleModal">Enlarge</a>
+        	<% if (loggedIn === true) { %>
+				<a href="#images/delete/<%= image._id %>" class="btn btn-danger delete-image btn-sm" role="button">
+					<span class="glyphicon glyphicon-trash"></span>
+				</a>
+			<% } %>
+        </p>
+    </div>
+</script>
+
+<script id="show-image-template" type="text/template">
+	<div class="pull-left">
+		<h3><%= image.caption %></h3>
+	</div>
+	<div class="pull-right">
+		<a href="javascript:history.back();" class="btn btn-default">Go Back</a>
+		<% if (loggedIn === true) { %>
+			<a href="#images/delete/<%= image._id %>" class="btn btn-danger delete-image">Delete</a>
+		<% } %>
+	</div>
+	<div class="clearfix"></div>
+	<hr/>
+	<div id="image-container">
+		<div id="image">
+			<div class="image-left-button">
+				<% if (leftButtonUrl === false) { %> 
+					<div class="disabled">
+				<% } else { %> 
+					<div rel="<%= leftButtonUrl %>">
+				<% } %> 
+				&#10096;</div>
+			</div>
+			<img src="media/<%= image.fileName %>" alt="<%= image.caption %>" />
+			<% if (image.tags.length > 0) { %>
+			<% for (var i = 0; i < image.tags.length; i++) { %>
+				<div class="tag-outline" id="outline_<%= image.tags[i]._id %>" style="top: <%= image.tags[i].viewTop %>px; left: <%= image.tags[i].viewLeft %>px">
+				</div>
+				<div class="tag-tooltip" id="tooltip_<%= image.tags[i]._id %>" style="top: <%= image.tags[i].tooltipTop %>px; left: <%= image.tags[i].tooltipLeft %>px">
+					<%= image.tags[i].label %>
+				</div>
+			<% }} %>
+			<div class="image-right-button">
+				<% if (rightButtonUrl === false) { %> 
+					<div class="disabled">  
+				<% } else { %> 
+					<div rel="<%= rightButtonUrl %>">
+				<% } %>
+				&#10097;</div>
+			</div>
+		</div>
+	</div>
+	<br/>
+	<input type="hidden" id="imageId" value="<%= image._id %>" />
+	<hr/>
+	<div id="tags-holder"></div>
+</script>
+
+<script id="tag-template" type="text/template">
+	@ <%= tag.label %> 
+	(<a href="#/images/<%= imageId %>/tags/<%= tag._id %>" rel="<%= tag._id %>" class="remove-tag">Remove</a>)
+</script>
+
+<script id="image-form-template" type="text/template">
+	<h1>Upload New Image</h1>
+	<hr/>
+	<form id="uploadForm" enctype="multipart/form-data">
+		<div class="col-lg-12 col-sm-12 col-xs-12">
+			<h4>Caption: </h4>
+			<input type="text" class="form-control" name="caption" id="caption" />
+		</div>
+		<div class="col-lg-12 col-sm-12 col-xs-12">
+            <h4>Choose File</h4>
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <span class="btn btn-primary btn-file">
+                        Browse… <input type="file" id="file" name="file" multiple="">
+                    </span>
+                </span>
+                <input type="text" readonly="" class="form-control">
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+        <div class="col-lg-12 col-sm-12 col-xs-12">
+			<button type="submit" id="add_image" class="btn btn-primary">Save</button> 
+			<a href="javascript:history.back();" class="btn btn-default">Cancel</a>
+		</div>
+	</form>
+</script>
+
+<script id="pagination-template" type="text/template">
+	<hr>
+	<div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+		<div class="pull-left" id="per-page-wrapper">
+			<span>Images per page: </span>
+			<select id="per-page">
+				<% perPageValues.forEach(function(pageValue) { %>
+					<% if (pageValue == perPage) { %>
+						<option value="<%= pageValue %>" selected><%= pageValue %></option>
+					<% } else { %>
+						<option value="<%= pageValue %>"><%= pageValue %></option>
+				<% }}); %>
+			</select>
+		</div>
+	</div>
+	<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+		<ul class="pagination">
+			<% if (currentLinkNumber != 1) { %>
+				<li ><a class="page" rel="<%= (currentLinkNumber - 1) %>" href="#<%= pageUrl %>/page/<%= (currentLinkNumber - 1) %>" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+			<% } else { %>
+				<li class="disabled"><span aria-hidden="true">&laquo;</span></li>
+			<% } %>
+			<% for (var i = pageMin; i <= pageMax; i++) { %>
+				<% if (i == currentLinkNumber) { %>
+					<li class="active"><a rel="<%= i %>" class="page" href="#<%= pageUrl %>/page/<%= i %>"><%= i %></a></li>
+				<% } else { %>
+					<li><a class="page" rel="<%= i %>" href="#<%= pageUrl %>/page/<%= i %>"><%= i %></a></li>
+				<% }} %>
+			<% if (currentLinkNumber < numOfPages) { %>
+				<li><a class="page" rel="<%= (currentLinkNumber + 1) %>" href="#<%= pageUrl %>/page/<%= (currentLinkNumber + 1) %>" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+			<% } else { %>
+				<li class="disabled"><span aria-hidden="true">&raquo;</span></li>
+			<% } %>
+		</ul> 
+	</div>
+</script>
+
+<script id="admin-login-template" type="text/template">
+	<h2 class="text-center">Please login </h2> <hr />
+	<form role="form" class="form-horizontal contact-form">
+	    <div class="form-group">
+	        <label for="username">Username:</label>
+			<input type="text" id="username" class="form-control">
+	    </div>
+	    <div class="form-group">
+	        <label for="password">Password:</label>
+			<input type="password" id="password" class="form-control">
+	    </div>
+	    <div class="form-group">
+	        <button type="submit" id="login_btn" class="btn btn-primary btn-lg">Login</button>
+	        <a href="javascript:history.back();" class="btn btn-default btn-lg">Cancel</a>
+	    </div>
+	</form>
+</script>
+
+<script id="about-template" type="text/template">
+	<h1>About Page</h1>
+	<hr/>
+	<h3>Image Gallery with Image Tagging</h3>
+	<br/>
+	<p>This project is SPA (Single Page Application) on MEBN stack (Mongoose, Express, Backbone, Node). It is based upon tutorial of Sebastian Sulinski: image gallery with image tagging with PHP, MYSQL and JQuery.</p>
+	<br/>
+	<p>The purpose of this project is to upload images, add and remove tags on image, view the images, and delete. Images can be searched by caption attribute.</p>
+	<p>Technologies implemented are: </p>
+	<ul>
+		<li>CRUD - without update</li>
+		<li>Authentication - there is only one user which is admin and this user needs to be set manually in the mongolabs database using hashed password ofcourse. Authentication is implemented with json web tokens and sessions</li>
+		<li>File uploads - using multer middleware for Node. This is only avaialble for admin as well as deletion of images</li>
+		<li>Adding and removing tags - using JQuery DOM manipulation. This can be done by anyone</li>
+		<li>Pagination - which is accomplished server side</li>
+		<li>Sorting - accomplished with JQuery UI with server side data persistence. Images can be sorted by dragging and dropping</li>
+	</ul>
+	<br/>
+	<a href="javascript:history.back();" class="btn btn-default">Go Back</a>
+</script>
+
+<script id="not-found-template" type="text/template">
+	<h1>Error 404 Not Found</h1>
+	<h3><%- message %></h3>
+	<a href="javascript:history.back();" class="btn btn-default">Go Back</a>
+</script>
+
+<!-- Libraries -->
+<script src="/js/lib/jquery.js"></script>	
+<script src="/js/lib/jquery-ui.js"></script>
+<script src="/js/lib/moment.js"></script>	
+<script src="/js/lib/js.cookie.js"></script>
+<script src="/js/lib/bootstrap.js"></script>
+<script src="/js/lib/underscore.js"></script>		
+<script src="/js/lib/backbone.js"></script>	
+<script src="/js/lib/backbone-associations.js"></script>	
+<!-- App Config -->
+<script src="/js/config.js"></script>	
+<!-- Models -->
+<script src="/js/models/tag.js"></script>
+<script src="/js/models/image.js"></script>
+<!-- Collections -->
+<script src="/js/collections/images.js"></script>	
+<!-- Views -->
+<script src="/js/views/images-view.js"></script>
+<script src="/js/views/tags-view.js"></script>	
+<script src="/js/views/header-view.js"></script>	
+<script src="/js/views/about-view.js"></script>
+<script src="/js/views/pagination-view.js"></script>
+<script src="/js/views/admin-view.js"></script>
+<script src="/js/views/404-view.js"></script>
+<!-- Routers -->
+<script src="/js/routers/router.js"></script>
+<!-- App Start -->
+<script src="/js/app.js"></script>	
+
+</body>
+</html>

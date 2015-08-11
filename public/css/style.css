@@ -1,0 +1,156 @@
+.container {
+    max-width: 1113px !important;
+}
+/*:::::::::::::::::::::::::::::::::: Modal overlay ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+body {  position: relative; }
+.overlay { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 99999px; 
+    z-index: 10; 
+    background-color: #fff;
+    /*background-color: rgba(0,0,0,0.2); dim the background*/ 
+}
+.overlay-container { 
+    width: 300px; 
+    height: 200px; 
+    line-height: 200px; 
+    position: fixed; 
+    top: 50%; 
+    left: 50%; 
+    margin-top: -100px; 
+    margin-left: -150px; 
+    text-align: center; 
+    z-index: 11; /* 1px higher than the overlay layer */ 
+}
+#response {
+    width: 88%;
+    position: fixed;
+    margin: 0 5px;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 5;
+    font-size: 16px;
+    text-align: center;
+}
+.response-success {
+    background: #9CE8AC;
+    border: 1px solid #05B788;
+    color: green;
+}
+.response-error {
+    background: #F8B1B1;
+    border: 1px solid #A30E0E;
+    color: red;
+}
+.image-wrapper {
+    max-width: 200px !important;
+    height: auto;
+    margin: 0 10px 10px 0;
+}
+.thumbnail:hover {
+    border: 1px solid #23527c;
+}
+.image-wrapper a img {
+    width: 100%;
+    max-height: 142px;
+} 
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+#image {
+    position: relative;
+    z-index: 1;
+}
+#image:hover {
+    cursor: crosshair;
+}
+#image .image-left-button, #image .image-right-button {
+    position: absolute;
+    height: 100%;
+    width: 5%;
+    background: transparent;
+    text-align: center;
+}
+#image .image-left-button {
+    top: 0;
+    left: 0;
+}
+#image .image-right-button {
+    top: 0;
+    right: 0;
+}
+#image .image-left-button div, #image .image-right-button div {
+    width: 100%;
+    top: 50%;
+    position: absolute;
+    color: #fff;
+    font-size: 4em;
+    transition: all ease-in 0.2s;
+}
+#image .image-left-button div:hover, #image .image-right-button div:hover {
+    color: #337ab7;
+    cursor: pointer;
+}
+.disabled {
+    display: none;
+}
+div.outline {
+    position: absolute;
+    width: 106px;
+    height: 106px;
+    border: 3px solid #fff;
+    background: transparent;
+} 
+.tools {
+    position: absolute;
+    background: #982560;
+    padding: 8px 20px;
+}
+.tools label, .tools input {
+    display: block;
+}
+.tools a {
+    display: inline-block;
+}
+.tag-outline {
+    position: absolute;
+    width: 106px;
+    height: 106px;
+    border: transparent;
+    background: transparent; 
+}
+.tag-tooltip {
+    position: absolute;
+    background: transparent;
+    min-width: 106px !important;
+    padding: 5px 5px 10px 5px;
+    color: transparent;
+    text-align: center;
+    border-radius: 4px;
+    transition: all ease-in 0.3s;
+}
+#per-page-wrapper {
+    width: 220px;
+    height: 35px;
+    margin: 15px 0 0 0;
+}
