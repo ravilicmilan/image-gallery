@@ -128,7 +128,7 @@ app.Routers.Router = Backbone.Router.extend({
 		this.headerView.selectMenu('admin');
 	},
 
-	searchImages: function(searchTerm, num) {
+	searchImages: function(searchTerm, num, perpage) {
 		var self = this;
 		if (num == undefined) {
 			num = 1;
