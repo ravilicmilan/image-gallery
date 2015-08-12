@@ -14,8 +14,10 @@ var upload = multer({
 
 		if (allowedExtensions.indexOf(ext) === -1) {
 			cb(null, false, {message: 'Only image type files are allowed: ' + allowedExtensions.toString()});
+			console.log(file);
 		} else {
 			cb(null, true);
+			console.log(file);
 		}
   	}
 });
@@ -127,7 +129,7 @@ router.post('/', cpUpload,  function(req, res, next) {
 			}
 
 			var newImage = new ImageModel({
-				caption: req.body.caption,
+				caption: req.body.caption.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '***'),
 				fileName: req.file.filename + '-' + req.file.originalname,
 				position: totalImages + 1
 			});
@@ -169,7 +171,6 @@ router.post('/:_id/tags', function(req, res, next) {
 			tooltipTop : tooltipTop,
 			tooltipLeft : tooltipLeft
 		};
-		console.log(newTag);
 
         image.tags.push(newTag);
 
@@ -195,36 +196,27 @@ router.post('/position/update', function(req, res, next) {
 });
 
 
+/* PATCH */
 
-
-/* PUT */
-
-router.put('/:_id', checkAuth, function(req, res, next) {
+router.patch('/:_id', checkAuth, function(req, res, next) {
 	if (!req.body.caption || req.body.caption === '' || req.body.caption.length < 1) {
-		res.json({error: 'Title cannot be empty!'});
+		res.json({error: 'Caption cannot be empty!'});
 	} else {
 		ImageModel.findOne({_id: req.params._id}, function(err, image) {
 			if (err) {
-				res.json({error: 'Unable to get image with an id: ' + req.params.id});
+				res.json({error: 'Unable to get image with an id: ' + req.params._id});
 				throw err;
 			} 
-			image.title = req.body.title;
-			image.content = req.body.content;
-			image.slug = req.body.slug
+			image.caption = req.body.caption.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '***');
 			image.save(function(err) {
 				if (err) {
-					res.json({error: 'Unable to update image with an id: ' + req.params.id});
+					res.json({error: 'Unable to update image caption with an id: ' + req.params._id});
 					throw err;
 				}
 				res.json(image);
 			});
 		});			
 	}
-});
-
-
-router.put('/:_id/tags/:tagId', checkAuth, function(req, res, next) {
-	
 });
 
 /* DELETE */

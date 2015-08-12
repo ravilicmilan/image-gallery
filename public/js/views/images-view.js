@@ -91,7 +91,7 @@ app.Views.ImagesView = Backbone.View.extend({
         this.collection.add(model, {at: position});
 
         var ids = this.collection.pluck('_id');
-        
+
         $.ajax({
         	type: 'POST',
         	data: {ids: ids.join(';')},
@@ -131,7 +131,10 @@ app.Views.ShowImageView = Backbone.View.extend({
 		'mouseover .tag-outline': 'showTooltip',
 		'mouseout .tag-outline': 'removeTooltip',
 		'click .image-left-button div': 'navigateGallery',
-		'click .image-right-button div': 'navigateGallery'
+		'click .image-right-button div': 'navigateGallery',
+		'click #caption-wrapper h3': 'editCaption',
+		'click #caption-wrapper #update-caption-btn': 'updateCaption',
+		'click #caption-wrapper #cancel-caption-btn': 'cancelCaption'
 	},
 
 	initialize: function(options) {
@@ -341,6 +344,46 @@ app.Views.ShowImageView = Backbone.View.extend({
 	navigateGallery: function(e) {
 		var url = $(e.currentTarget).attr('rel');
 		app.router.navigate(url, {trigger: true});
+	},
+
+	editCaption: function(e) {
+		if (app.Auth.loggedIn === false) return;
+		var $captionWrapper = $('#caption-wrapper');
+		var $caption = $captionWrapper.find('h3');
+		var oldCaption = $caption.text();
+		var input = '<div id="update-caption-wrapper">';
+		input += '<input type="text" name="new_caption" id="new-caption" value="' + oldCaption + '" placeholder="Enter new caption" />';
+		input += '&nbsp; <button class="btn btn-primary" id="update-caption-btn">Save</button>';
+		input += '&nbsp; <button class="btn btn-default" id="cancel-caption-btn">Cancel</button></div>';
+		$captionWrapper.html(input);
+
+		$captionWrapper.find('input').focus();
+	},
+
+	cancelCaption: function(e) {
+		e.preventDefault();
+		$('#caption-wrapper').html('<h3>' + this.model.get('caption') + '</h3>');
+	},
+
+	updateCaption: function(e) {
+		e.preventDefault();
+		if (app.Auth.loggedIn === false) return;
+		var self = this;
+		var url = this.model.url();
+		var newCaption = $('#new-caption').val();
+		this.model.set('caption', newCaption);
+		this.model.save(null, {
+			success: function(model, response, options) {
+				if (response.error) {
+					app.showMessage('response-error', 'Caption could not be updated! Error: ' + response.error, 3000);
+				} else {
+					app.showMessage('response-success', 'Caption successfully saved!', 1500);
+					app.router.navigate(url, {trigger: true});
+					$('#caption-wrapper').html('<h3>' + newCaption + '</h3>');
+				}
+			}
+		});
+		console.log(newCaption);
 	}
 });
 

@@ -45,9 +45,10 @@ app.Models.ImageModel = Backbone.AssociatedModel.extend({
 			break;
 			case "update":
 				opts.type = "PATCH";
-				opts.data = new FormData();
-				opts.data.append("caption", model.get('caption'));
-				opts.data.append("position", model.get('position'));
+				opts.data = {};
+				opts.data = JSON.stringify({caption: model.get('caption')});
+				opts.processData = true;
+				opts.contentType = 'application/json';
 			break;
 			case "delete":
 				opts.type = "DELETE";
