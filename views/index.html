@@ -94,7 +94,7 @@
 </script>
 
 <script id="show-image-template" type="text/template">
-	<div class="pull-left">
+	<div class="pull-left" id="caption-wrapper">
 		<h3><%= image.caption %></h3>
 	</div>
 	<div class="pull-right">
@@ -238,7 +238,7 @@
 	<p>The purpose of this project is to upload images, add and remove tags on image, view the images, and delete. Images can be searched by caption attribute.</p>
 	<p>Technologies implemented are: </p>
 	<ul>
-		<li>CRUD - without update</li>
+		<li>CRUD - PATCH instead of PUT. Only for admin avaialble and only image caption can be updated.</li>
 		<li>Authentication - there is only one user which is admin and this user needs to be set manually in the mongolabs database using hashed password ofcourse. Authentication is implemented with json web tokens and sessions</li>
 		<li>File uploads - using multer middleware for Node. This is only avaialble for admin as well as deletion of images</li>
 		<li>Adding and removing tags - using JQuery DOM manipulation. This can be done by anyone</li>
