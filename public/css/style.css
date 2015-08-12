@@ -1,6 +1,9 @@
 .container {
     max-width: 1113px !important;
 }
+p {
+    line-height: 150%;
+}
 /*:::::::::::::::::::::::::::::::::: Modal overlay ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
 body {  position: relative; }
@@ -153,4 +156,13 @@ div.outline {
     width: 220px;
     height: 35px;
     margin: 15px 0 0 0;
+}
+#caption-wrapper h3:hover {
+    cursor: pointer;
+}
+#caption-wrapper button {
+    margin-top: -10px;
+}
+#caption-wrapper input[type=text] {
+    width: 200px;
 }
