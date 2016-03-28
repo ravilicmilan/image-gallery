@@ -1,5 +1,5 @@
 # image-gallery
-Image Gallery with Image Tagging
+Image Gallery with Image Tagging. https://image-gallery-on-mebn-stack.herokuapp.com
 
 This project is SPA (Single Page Application) on MEBN stack (Mongoose, Express, Backbone, Node). It is based upon tutorial of Sebastian Sulinski: image gallery with image tagging with PHP, MYSQL and JQuery.
 
