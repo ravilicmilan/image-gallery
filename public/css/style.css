@@ -84,8 +84,15 @@ body {  position: relative; }
     position: relative;
     z-index: 1;
 }
+#image img {
+    width: 100%;
+    height: 100%;
+}
 #image:hover {
     cursor: crosshair;
+}
+.go-back-btn {
+    margin-bottom: -50px !important;
 }
 #image .image-left-button, #image .image-right-button {
     position: absolute;
@@ -103,16 +110,33 @@ body {  position: relative; }
     right: 0;
 }
 #image .image-left-button div, #image .image-right-button div {
-    width: 100%;
+    width: 50px;
+    height: 50px;
     top: 50%;
-    position: absolute;
-    color: #fff;
-    font-size: 4em;
+    position: absolute;   
+    transform: rotate(-45deg);
     transition: all ease-in 0.2s;
 }
+#image .image-left-button div  {
+    border-left: 5px solid #789;
+    border-top: 5px solid #789;
+    left: 10px;
+}
+#image .image-right-button div {
+    border-right: 5px solid #789;
+    border-bottom: 5px solid #789;
+    right: 10px;
+}
 #image .image-left-button div:hover, #image .image-right-button div:hover {
-    color: #337ab7;
     cursor: pointer;
+}
+#image .image-left-button div:hover  {
+    border-left: 5px solid #ddd;
+    border-top: 5px solid #ddd;
+}
+#image .image-right-button div:hover {
+    border-right: 5px solid #ddd;
+    border-bottom: 5px solid #ddd;
 }
 .disabled {
     display: none;

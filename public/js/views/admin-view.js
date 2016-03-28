@@ -33,8 +33,8 @@ app.Views.AdminLogin = Backbone.View.extend({
 			success: function(data) {
 				app.Auth.user = data.user;
 				app.Auth.loggedIn = true;
-				
 				app.setToken(data.token);
+				
 				app.showMessage('response-success', 'You have successfully logged in!', 1500);
 				app.router.navigate('', {trigger: true});
 				app.vent.trigger('admin:login', [app.router.headerView]);

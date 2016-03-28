@@ -28,7 +28,7 @@ app.Routers.Router = Backbone.Router.extend({
 		this.headerView = new app.Views.HeaderView({vent: app.vent});
 		this.num = 1;
 		this.perpage = 12;
-		this.imageCollection = [];
+		this.imageCollection = app.getImagesArray() || [];
 		$('#header').html(this.headerView.render().el);
 	},
 
@@ -60,7 +60,9 @@ app.Routers.Router = Backbone.Router.extend({
 					self.imageCollection.push(model.attributes._id);
 				});
 
+				app.setImagesArray(self.imageCollection);
 				self.imagesView = new app.Views.ImagesView({collection: images});
+
 				$('#main').append(self.imagesView.render().el);
 
 				var pagination = new app.Views.Pagination({
@@ -102,7 +104,7 @@ app.Routers.Router = Backbone.Router.extend({
 		$('#main').empty();
 		var showImageView = new app.Views.ShowImageView({
 			model: image, 
-			imageCollection: this.imageCollection
+			imageCollection: app.getImagesArray()
 		});
 		
 		image.fetch().then(function(model, response, options) {
@@ -161,13 +163,17 @@ app.Routers.Router = Backbone.Router.extend({
 					self.imageCollection.push(model.attributes._id);
 				});
 
+				app.setImagesArray(self.imageCollection);
+
 				$('#main').append(imagesView.render().el);
+
 				var pagination = new app.Views.Pagination({
 					totalRecords: response.totalRecords, 
 					currentLinkNumber: parseInt(num),
 					perPage: parseInt(perpage),
 					pageUrl: '/images/search/' + searchTerm
 				});
+				
 				$('#pagination-wrapper').html(pagination.render().el);
 			}, 
 			error: function(model, response, options) {

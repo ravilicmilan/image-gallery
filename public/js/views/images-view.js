@@ -12,19 +12,20 @@ app.Views.ImageView = Backbone.View.extend({
 		'drop' : 'drop'
 	},
 
-	initialize: function(options) {
-	},
+	initialize: function(options) {},
 
 	render: function() {
 		this.$el.html(this.template({
 			image: this.model.toJSON(),
 			loggedIn: app.Auth.loggedIn
 		}));
+
 		return this;
 	},
 
 	showModal: function(e) {
 		e.preventDefault();
+		var button = $(event.relatedTarget); // Button that triggered the modal
 		$('.modal-title').text(this.model.get('caption'));
 		$('.modal-body img#modal-image').attr('src', '/media/' + this.model.get('fileName'));
 	},
@@ -39,6 +40,8 @@ app.Views.ImageView = Backbone.View.extend({
 					app.showMessage('response-success', 'Image successfully deleted!', 1500);
 					self.remove();
 					app.router.imageCollection.splice(app.router.imageCollection.indexOf(id), 1);
+					app.setImagesArray(app.router.imageCollection);
+					app.router.navigate('/', {trigger: true});
 				},
 				error: function(model, response, options) {
 					app.showMessage('response-error', 'Image could not be deleted! Error: ' + jqXhr.error, 5000);
@@ -138,7 +141,7 @@ app.Views.ShowImageView = Backbone.View.extend({
 	},
 
 	initialize: function(options) {
-		this.imageCollection = options.imageCollection || [];
+		this.imageCollection = app.getImagesArray() || [];
 		this.model.on('add:tags', this.render, this);
 	},
 
@@ -383,7 +386,6 @@ app.Views.ShowImageView = Backbone.View.extend({
 				}
 			}
 		});
-		console.log(newCaption);
 	}
 });
 
@@ -398,9 +400,7 @@ app.Views.ImageFormView = Backbone.View.extend({
 		'click #image': 'createDialog'
 	},
 
-	initialize: function(options) {
-		
-	},
+	initialize: function(options) {},
 
 	render: function() {
 		this.$el.html(this.template());
@@ -428,10 +428,12 @@ app.Views.ImageFormView = Backbone.View.extend({
 
 	uploadImage: function(e) {
 		e.preventDefault();
+
 		var image = new app.Models.ImageModel({
 			file: $("#file")[0].files[0],
 			caption: $("#caption").val()
 		});
+		
 		image.save(null, {
 			success: function(model, response, options) {
 				if (response.error) {

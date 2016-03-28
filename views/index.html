@@ -98,10 +98,7 @@
 		<h3><%= image.caption %></h3>
 	</div>
 	<div class="pull-right">
-		<a href="javascript:history.back();" class="btn btn-default">Go Back</a>
-		<% if (loggedIn === true) { %>
-			<a href="#images/delete/<%= image._id %>" class="btn btn-danger delete-image">Delete</a>
-		<% } %>
+		<a href="javascript:history.back();" class="btn btn-default go-back-btn">Go Back</a>
 	</div>
 	<div class="clearfix"></div>
 	<hr/>
@@ -113,7 +110,7 @@
 				<% } else { %> 
 					<div rel="<%= leftButtonUrl %>">
 				<% } %> 
-				&#10096;</div>
+				</div>
 			</div>
 			<img src="media/<%= image.fileName %>" alt="<%= image.caption %>" />
 			<% if (image.tags.length > 0) { %>
@@ -130,7 +127,7 @@
 				<% } else { %> 
 					<div rel="<%= rightButtonUrl %>">
 				<% } %>
-				&#10097;</div>
+				</div>
 			</div>
 		</div>
 	</div>

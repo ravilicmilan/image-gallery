@@ -31,22 +31,27 @@ var app = {
 	},
 
 	getToken: function() {
-		var meta = $('meta[name=x-access-token]').attr('content');
-		if (meta !== undefined || meta !== null || meta !== '') {
-			return meta;
-		} else {
-			return Cookies.get('token');
-		}
+		return localStorage.getItem('images_token');
 	},
 
 	setToken: function(token) {
-		Cookies.set('token', token);
-		$('meta[name=x-access-token]').attr('content', token);
+		localStorage.setItem('images_token', token);
 	},
 
 	removeToken: function() {
-		Cookies.set('token', '');
-		$('meta[name=x-access-token]').attr('content', null);
+		localStorage.setItem('images_token', '');
+	},
+
+	getImagesArray: function() {
+		return localStorage.getItem('images_position_array').split(',');
+	},
+
+	setImagesArray: function(array) {
+		localStorage.setItem('images_position_array', array);
+	},
+
+	removeImagesArray: function() {
+		localStorage.setItem('images_position_array', '');
 	},
 
 	Auth: {
